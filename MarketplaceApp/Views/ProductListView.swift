@@ -18,7 +18,10 @@ final class ProductListView: UIView {
     
     private let viewModel = ProductListViewModel()
     public weak var delegate: ProductListViewDelegate?
+    
+    var currentIndexPath: IndexPath?
     let pressedDownTransform =  CGAffineTransform.identity.scaledBy(x: 0.98, y: 0.98)
+    
 
     
     // MARK: - UI Components
@@ -97,6 +100,7 @@ final class ProductListView: UIView {
         viewModel.fetchProducts()
         collectionView.delegate = viewModel
         collectionView.dataSource = viewModel
+        addAnimateToCell()
     }
     
     required init?(coder: NSCoder) {
@@ -186,5 +190,64 @@ extension ProductListView: ProductListViewModelDelegate {
             self.collectionView.alpha = 0
         }
         setupUIError()
+        
+    }
+}
+
+// MARK: - Add animation to click on a cell
+
+extension ProductListView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    private func addAnimateToCell() {
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(didTapLongPress))
+        longPressRecognizer.minimumPressDuration = 0.05
+        longPressRecognizer.cancelsTouchesInView = false
+        longPressRecognizer.delegate = self
+        collectionView.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    @objc func didTapLongPress(sender: UILongPressGestureRecognizer) {
+        let point = sender.location(in: collectionView)
+        let indexPath = collectionView.indexPathForItem(at: point)
+        
+        if sender.state == .began, let indexPath = indexPath, let cell = collectionView.cellForItem(at: indexPath) {
+            // Первоначальное нажатие вниз, анимация внутрь, отслеживание текущего нажатого пути индекса
+            
+            animate(cell, to: pressedDownTransform)
+            self.currentIndexPath = indexPath
+        } else if sender.state == .changed {
+            // Касание перемещено
+            // Если касание переместилось вместе с текущей ячейкой, тогда анимируем резервную копию текущей ячейки
+            // В противном случае снова анимируем вниз
+            
+            if indexPath != self.currentIndexPath, let currentIndexPath = self.currentIndexPath, let cell = collectionView.cellForItem(at: currentIndexPath) {
+                if cell.transform != .identity {
+                    animate(cell, to: .identity)
+                }
+            } else if indexPath == self.currentIndexPath, let indexPath = indexPath, let cell = collectionView.cellForItem(at: indexPath) {
+                if cell.transform != pressedDownTransform {
+                    animate(cell, to: pressedDownTransform)
+                }
+            }
+        } else if let currentIndexPath = currentIndexPath, let cell = collectionView.cellForItem(at: currentIndexPath) {
+            // Касание завершено/отменено, возвращаем ячейке идентификатор
+            
+            animate(cell, to: .identity)
+            self.currentIndexPath = nil
+        }
+    }
+    
+    private func animate(_ cell: UICollectionViewCell, to transform: CGAffineTransform) {
+        UIView.animate(withDuration: 0.4,
+                       delay: 0,
+                       usingSpringWithDamping: 0.4,
+                       initialSpringVelocity: 3,
+                       options: [.curveEaseInOut],
+                       animations: {
+            cell.transform = transform
+        }, completion: nil)
     }
 }

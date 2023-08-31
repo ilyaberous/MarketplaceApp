@@ -17,6 +17,8 @@ protocol ProductListViewModelDelegate: AnyObject {
 class ProductListViewModel: NSObject {
     
     // MARK: - Properties
+    var currentIndexPath: IndexPath?
+    let pressedDownTransform =  CGAffineTransform.identity.scaledBy(x: 0.98, y: 0.98)
     
     //неккоретный URL (чтобы продемонстрировать оборажение экрана в состоянии ошибки)
     public var productsURL = "https://www.avito.st/s/interns-ios/main-page.jsondfgdfdg"
@@ -85,3 +87,4 @@ extension ProductListViewModel: UICollectionViewDelegate, UICollectionViewDataSo
         return CGSize(width: width, height: 329)
     }
 }
+
