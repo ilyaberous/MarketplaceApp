@@ -3,12 +3,13 @@
 Тестовое задания для стажировки в Avito. 
 Сделано в полном соотвествии с требованиями, указанными в ТЗ. 
 
-Для работы с данными использовалось API от Avito:\
- > https://www.avito.st/s/interns-ios/main-page.json 
- >   URL для запроса на главном экране.
- > https://www.avito.st/s/interns-ios/details/{itemId}.json
- >  URL для запроса на детальной странице. ID берется из данных для главного экрана.
- >  Пример ссылки: https://www.avito.st/s/interns-ios/details/1.json"
+Для работы с данными использовалось API от Avito:
+> - https://www.avito.st/s/interns-ios/main-page.json
+>   - URL для запроса на главном экране.
+> - https://www.avito.st/s/interns-ios/details/{itemId}.json
+>   - URL для запроса на детальной странице. ID берется из данных для главного экрана. 
+>   - Пример ссылки: https://www.avito.st/s/interns-ios/details/1.json
+
 
 # Overview
 
@@ -18,8 +19,9 @@
 - Для API запросов использовался URLSession
 - UI верстка полностью кодом (programmatically), autolayout based
 
-  
-  **Также из достоинств:**\
+  \
+  \
+  **Также из достоинств:**
 
 - Приятный, простой и стильный дизайн ^-^
 - Есть красивая анимация нажатия на ячейки collectionview
